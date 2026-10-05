@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Modules\Multimodal\Enums;
+
+enum ProvenanceClassification: string
+{
+    case OBSERVED_FROM_IMAGE = 'OBSERVED_FROM_IMAGE';
+    case INFERRED_FROM_VISUAL_STRUCTURE = 'INFERRED_FROM_VISUAL_STRUCTURE';
+    case INFERRED_FROM_RELATION = 'INFERRED_FROM_RELATION';
+    case MATCHED_TO_CATALOG = 'MATCHED_TO_CATALOG';
+    case CONFIRMED_BY_USER = 'CONFIRMED_BY_USER';
+}

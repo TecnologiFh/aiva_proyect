@@ -1,0 +1,19 @@
+{
+  "name": "aiva-whatsapp-qr-gateway",
+  "version": "1.0.0",
+  "description": "Gateway Oficial de WhatsApp Web QR para AIVA impulsado por Groq Cloud LPU",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "start:gateway": "node server.js",
+    "reset": "node server.js --reset",
+    "logout": "node server.js --reset"
+  },
+  "dependencies": {
+    "whatsapp-web.js": "^1.26.0",
+    "qrcode-terminal": "^0.12.0",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7"
+  }
+}

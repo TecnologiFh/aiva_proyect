@@ -1,0 +1,27 @@
+@extends('layouts.app')
+
+@section('title', 'Acceso Denegado por Rol — AIVA Commerce')
+
+@section('content')
+<div class="min-h-[60vh] flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-xl text-center space-y-6">
+        <div class="w-16 h-16 bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-inner">
+            🛡️
+        </div>
+        <div class="space-y-2">
+            <span class="px-3 py-1 bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 text-[10px] font-extrabold rounded-full border border-rose-200 dark:border-rose-800 uppercase tracking-wider">
+                PERMISSION_DENIED (HTTP 403)
+            </span>
+            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">Acceso Denegado por Rol</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                Tu rol de usuario no posee la autorización necesaria para acceder a este recurso o ejecutar esta acción.
+            </p>
+        </div>
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            <a href="/dashboard" class="inline-flex items-center justify-center px-6 py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md transition">
+                ← Volver al Dashboard Operativo
+            </a>
+        </div>
+    </div>
+</div>
+@endsection

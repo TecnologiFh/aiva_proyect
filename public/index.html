@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVA SaaS Platform - Command Center & Live Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --panel-bg: rgba(17, 24, 39, 0.7);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.15) 0%, transparent 40%);
+        }
+
+        /* Top Header */
+        header {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .logo-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #fff;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: rgba(17, 24, 39, 0.5);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 1rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .nav-btn.active {
+            color: var(--accent-purple);
+            border-bottom-color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Panels */
+        .glass-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-purple);
+        }
+
+        .metric-card.emerald::before { background: var(--accent-emerald); }
+        .metric-card.cyan::before { background: var(--accent-cyan); }
+        .metric-card.amber::before { background: var(--accent-amber); }
+        .metric-card.rose::before { background: var(--accent-rose); }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .metric-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* WhatsApp Simulator Chat Window */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            background: #0d131f;
+            border-radius: 12px;
+            border: 1px solid var(--panel-border);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #161e2e;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .msg-bubble {
+            max-width: 80%;
+            padding: 0.8rem 1.1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .msg-customer {
+            align-self: flex-end;
+            background: #005c4b;
+            color: #e9edef;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-ai {
+            align-self: flex-start;
+            background: #202c33;
+            color: #d1d7db;
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-time {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+
+        .chat-input-bar {
+            background: #161e2e;
+            padding: 0.8rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #0d131f;
+            border: 1px solid var(--panel-border);
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-purple);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+
+        .btn-emerald {
+            background: linear-gradient(135deg, var(--accent-emerald), #059669);
+        }
+
+        /* Data Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            padding: 0.8rem 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--panel-border);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-purple { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-rose { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .badge-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+        /* Code & JSON Previews */
+        .json-preview {
+            background: #080c14;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #a7f3d0;
+            max-height: 250px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--panel-border);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(11, 15, 25, 0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-badge">AIVA</div>
+            <div>
+                <div class="logo-title">AIVA SaaS Command Center</div>
+                <div class="logo-subtitle">AI-Driven Conversational Commerce & Automation Engine</div>
+            </div>
+        </div>
+
+        <div class="header-status">
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                Tenant #1: Pizzería Italia (Multi-Tenant Active)
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav>
+        <button class="nav-btn active" onclick="switchTab('simulator')">💬 Simulador WhatsApp & IA</button>
+        <button class="nav-btn" onclick="switchTab('orders')">📋 Motor de Pedidos (Sprint 6)</button>
+        <button class="nav-btn" onclick="switchTab('payments')">💳 Pasarelas de Pago (Sprint 7)</button>
+        <button class="nav-btn" onclick="switchTab('inventory')">📦 Inventario & Kardex (Sprint 8)</button>
+        <button class="nav-btn" onclick="switchTab('crm')">👤 AI CRM & Customer Brain (Sprint 9)</button>
+        <button class="nav-btn" onclick="switchTab('analytics')">📊 Analytics & ROI de IA (Sprint 10)</button>
+        <button class="nav-btn" onclick="switchTab('automation')">⚡ Motor de Automatizaciones (Sprint 11)</button>
+    </nav>
+
+    <!-- Main Workspace -->
+    <main>
+
+        <!-- TAB 1: SIMULADOR WHATSAPP & IA -->
+        <div id="tab-simulator" class="tab-content active">
+            <div class="grid-2">
+                <!-- Chat Window -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-title">📱 Chat Simulator - WhatsApp Business</div>
+                        <span class="badge badge-emerald">En vivo ($0 Cost Mock AI)</span>
+                    </div>
+
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-avatar">AI</div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem;">Pizzería Italia - Asistente IA AIVA</div>
+                                <div style="font-size: 0.7rem; color: #34d399;">● En línea (Redis Business Brain 0ms)</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="msg-bubble msg-ai">
+                                👋 ¡Hola! Bienvenido a Pizzería Italia. Soy tu asistente virtual impulsado por IA. ¿En qué te puedo ayudar hoy?
+                                <div class="msg-time">00:30</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-bar">
+                            <input type="text" id="user-msg-input" class="chat-input" placeholder="Escribe tu pedido (ej. 'Quiero 2 pizzas familiares sin cebolla')..." onkeypress="handleKeyPress(event)">
+                            <button class="btn" onclick="sendMessage()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live AI Inspection Panel -->
+                <div>
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="card-title">🧠 AI Gateway Inspection (Sprint 4)</div>
+                            <span class="badge badge-purple">Structured Output</span>
+                        </div>
+                        <div class="grid-2" style="margin-bottom: 1rem;">
+                            <div class="metric-card cyan">
+                                <div class="metric-label">Intención Detectada</div>
+                                <div class="metric-value" id="ai-intent-label" style="font-size: 1.2rem; color: #22d3ee;">PURCHASE_INTENT</div>
+                            </div>
+                            <div class="metric-card emerald">
+                                <div class="metric-label">Confianza de IA</div>
+                                <div class="metric-value" id="ai-confidence-label" style="font-size: 1.2rem; color: #34d399;">98.5%</div>
+                            </div>
+                        </div>
+                        <div class="metric-label" style="margin-bottom: 0.5rem;">Entidades Extraídas & OrderSnapshot JSON:</div>
+                        <div class="json-preview" id="ai-json-preview">{
+  "intent": "PURCHASE_INTENT",
+  "confidence": 0.985,
+  "entities": [
+    {
+      "product": "Pizza Familiar",
+      "quantity": 2,
+      "options": [{"option_name": "Salsa", "value_name": "BBQ"}]
+    }
+  ],
+  "needs_human": false
+}</div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="card-title">⚡ Acciones de Acceso Rápido</div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="quickSend('Quiero pedir una Pizza Familiar BBQ y 1 Coca Cola 1.5L')">🍕 Pedir Pizza BBQ</button>
+                            <button class="btn btn-secondary" onclick="quickSend('¿Cuáles son sus horarios de atención?')">🕒 Consultar Horarios</button>
+                            <button class="btn btn-secondary" onclick="quickSend('Necesito hablar con una persona por favor')">👤 Solicitar Humano</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MOTOR DE PEDIDOS (SPRINT 6) -->
+        <div id="tab-orders" class="tab-content">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">📋 Historial & Control de Pedidos Comerciales</div>
+                    <button class="btn btn-emerald" onclick="createSampleOrder()">+ Registrar Pedido de Prueba</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N° Correlativo</th>
+                                <th>Cliente</th>
+                                <th>Teléfono</th>
+                                <th>Modalidad</th>
+                                <th>Estado Comercial</th>
+                                <th>Estado Pago</th>
+                                <th>Total (S/)</th>
+                                <th>OrderSnapshot JSON</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <tr>
+                                <td style="font-weight: 700; color: #c084fc;">ORD-2026-0001</td>
+                                <td>Luis Fiestas</td>
+                                <td>+51999888777</td>
+                                <td><span class="badge badge-purple">DELIVERY</span></td>
+                                <td><span class="badge badge-amber" id="order-status-1">PENDING_CONFIRMATION</span></td>
+                                <td><span class="badge badge-amber" id="payment-status-1">PENDING</span></td>
+                                <td style="font-weight: 700;">S/ 81.00</td>
+                                <td><button class="btn btn-secondary" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="viewSnapshot('ORD-2026-0001')">Ver Snapshot</button></td>
+                                <td>
+                                    <button class="btn" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="advanceOrderStatus(1)">Avanzar Estado</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: PASARELAS DE PAGO (SPRINT 7) -->
+        <div id="tab-payments" class="tab-content">
+            <div class="grid-2">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-title">📲 Cobranza Yape / Plin / QR Generator</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=YAPE_AIVA_PAY_ORD20260001" alt="QR Yape" style="border-radius: 12px; border: 4px solid var(--accent-purple);">
+                        <div style="margin-top: 1rem; font-weight: 700; font-size: 1.1rem;">Yape / Plin: S/ 81.00</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Titular: Pizzería Italia S.A.C. (999 888 777)</div>
+                        <button class="btn btn-emerald" style="margin-top: 1.25rem; width: 100%; justify-content: center;" onclick="simulateWebhookPayment('APPROVED')">Simular Webhook de Pago Aprobado ($0)</button>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-title">💳 Auditoría de Transacciones de Pago</div>
+                        <span class="badge badge-cyan">Idempotencia Activa</span>
+                    </div>
+                    <div class="json-preview" id="payment-audit-preview">{
+  "gateway": "YAPE_PLIN",
+  "gateway_transaction_id": "YP-TX-984210",
+  "merchant_reference": "ORD-2026-0001",
+  "amount": 81.00,
+  "currency": "PEN",
+  "status": "PENDING",
+  "expires_at": "2026-08-06T01:00:00Z"
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: INVENTARIO & KARDEX (SPRINT 8) -->
+        <div id="tab-inventory" class="tab-content">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">📦 Control de Existencias de Almacén (Sucursal #1)</div>
+                    <span class="badge badge-emerald">SELECT FOR UPDATE Transaccional</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Stock Físico (current)</th>
+                                <th>Reservado (reserved)</th>
+                                <th>Disponible (available)</th>
+                                <th>Mínimo</th>
+                                <th>Estado Disponibilidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 600;">Pizza Familiar BBQ</td>
+                                <td id="stock-current-1" style="font-weight: 700;">12.00</td>
+                                <td id="stock-reserved-1" style="color: var(--accent-amber);">2.00</td>
+                                <td id="stock-available-1" style="font-weight: 700; color: var(--accent-emerald);">10.00</td>
+                                <td>5.00</td>
+                                <td><span class="badge badge-emerald" id="stock-badge-1">DISPONIBLE</span></td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="adjustStock(1, -10)">Ajustar Stock (-10)</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">Coca Cola 1.5L</td>
+                                <td>25.00</td>
+                                <td>1.00</td>
+                                <td style="font-weight: 700; color: var(--accent-emerald);">24.00</td>
+                                <td>10.00</td>
+                                <td><span class="badge badge-emerald">DISPONIBLE</span></td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="adjustStock(2, 5)">+ Ingreso (+5)</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: AI CRM & CUSTOMER BRAIN (SPRINT 9) -->
+        <div id="tab-crm" class="tab-content">
+            <div class="grid-2">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-title">👤 Perfil 360° del Cliente - Luis Fiestas</div>
+                        <span class="badge badge-purple">VIP (Score: 95/100)</span>
+                    </div>
+                    <div class="grid-2">
+                        <div class="metric-card purple">
+                            <div class="metric-label">Ventas Totales (CLV)</div>
+                            <div class="metric-value">S/ 865.00</div>
+                        </div>
+                        <div class="metric-card cyan">
+                            <div class="metric-label">Ticket Promedio</div>
+                            <div class="metric-value">S/ 86.50</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <div class="metric-label" style="margin-bottom: 0.5rem;">Memorias de IA Detectadas:</div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <span class="badge badge-purple">Prefiere Sin Cebolla (Confiabilidad: 96%)</span>
+                            <span class="badge badge-cyan">Pago Preferido: Yape</span>
+                            <span class="badge badge-emerald">Horario: Viernes Noche</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-title">🧠 Customer Brain Redis Snapshot</div>
+                        <span class="badge badge-emerald">0ms Latencia BD</span>
+                    </div>
+                    <div class="json-preview">{
+  "customer": {
+    "uuid": "cust-uuid-1234",
+    "name": "Luis Fiestas",
+    "stage": "VIP",
+    "score": 95,
+    "average_ticket": 86.50,
+    "ai_summary": "Cliente VIP recurrente. Suele pedir los viernes por la noche. Prefiere Pizza Familiar sin cebolla.",
+    "tags": ["VIP", "Cliente Frecuente", "High Spender"]
+  }
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: ANALYTICS & ROI DE IA (SPRINT 10) -->
+        <div id="tab-analytics" class="tab-content">
+            <div class="grid-4" style="margin-bottom: 1.5rem;">
+                <div class="metric-card emerald">
+                    <div class="metric-label">Ventas Totales (Hoy)</div>
+                    <div class="metric-value">S/ 1,250.00</div>
+                    <div class="metric-subtext">↑ 18.4% vs semana pasada</div>
+                </div>
+                <div class="metric-card purple">
+                    <div class="metric-label">Retorno Inversión IA (ROI)</div>
+                    <div class="metric-value" style="color: #c084fc;">1,504 %</div>
+                    <div class="metric-subtext">$12.30 IA ➔ S/ 18,500 Ventas</div>
+                </div>
+                <div class="metric-card cyan">
+                    <div class="metric-label">Tasa de Automatización</div>
+                    <div class="metric-value" style="color: #22d3ee;">94.2 %</div>
+                    <div class="metric-subtext">Solo 5.8% requirió humano</div>
+                </div>
+                <div class="metric-card amber">
+                    <div class="metric-label">Tiempo de Respuesta</div>
+                    <div class="metric-value" style="color: #fbbf24;">2.4 s</div>
+                    <div class="metric-subtext">⚡ 125x más rápido que humano</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: MOTOR DE AUTOMATIZACIONES (SPRINT 11) -->
+        <div id="tab-automation" class="tab-content">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">⚡ Reglas de Automatización Comercial (Estilo Zapier)</div>
+                    <button class="btn" onclick="alert('Formulario de creación de reglas habilitado')">+ Crear Nueva Regla</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre de la Regla</th>
+                                <th>Disparador (Trigger)</th>
+                                <th>Árbol Lógico (Conditions)</th>
+                                <th>Acciones en Pipeline</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Ejecuciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 700; color: #c084fc;">Bienvenida Cliente VIP</td>
+                                <td><span class="badge badge-purple">ORDER_CREATED</span></td>
+                                <td><code>AND [order.total > 100]</code></td>
+                                <td><span class="badge badge-emerald">SEND_WHATSAPP</span> <span class="badge badge-cyan">ADD_TAG (VIP)</span></td>
+                                <td style="font-weight: 700;">100</td>
+                                <td><span class="badge badge-emerald">ACTIVA</span></td>
+                                <td style="font-weight: 700;">142</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: #c084fc;">Alerta de Stock Crítico</td>
+                                <td><span class="badge badge-amber">LOW_STOCK_DETECTED</span></td>
+                                <td><code>AND [stock.current <= minimum]</code></td>
+                                <td><span class="badge badge-rose">SEND_ADMIN_ALERT</span></td>
+                                <td style="font-weight: 700;">90</td>
+                                <td><span class="badge badge-emerald">ACTIVA</span></td>
+                                <td style="font-weight: 700;">18</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        AIVA SaaS Platform v11.0 &copy; 2026 - Engineered for High-Concurrency Production & Enterprise Scalability
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendMsg(text, 'customer');
+            input.value = '';
+
+            setTimeout(() => {
+                let aiReply = "¡Excelente elección! He procesado tu pedido. He generado la orden ORD-2026-0001 por 2x Pizza Familiar con Salsa BBQ (S/ 81.00). ¿Deseas confirmar para enviar a cocina?";
+                if (text.toLowerCase().includes('horario')) {
+                    aiReply = "🕒 Nuestros horarios son de Lunes a Domingo de 11:00 AM a 11:00 PM. ¡Estamos abiertos en este momento!";
+                } else if (text.toLowerCase().includes('humano')) {
+                    aiReply = "👨‍💼 Entendido. He transferido tu conversación al equipo humano de soporte (Human Takeover Mode Activo).";
+                }
+
+                appendMsg(aiReply, 'ai');
+            }, 600);
+        }
+
+        function quickSend(text) {
+            document.getElementById('user-msg-input').value = text;
+            sendMessage();
+        }
+
+        function appendMsg(text, type) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `msg-bubble msg-${type}`;
+            div.innerHTML = text + `<div class="msg-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function advanceOrderStatus(id) {
+            const statusBadge = document.getElementById('order-status-' + id);
+            const current = statusBadge.innerText;
+            if (current === 'PENDING_CONFIRMATION') {
+                statusBadge.innerText = 'CONFIRMED';
+                statusBadge.className = 'badge badge-emerald';
+            } else if (current === 'CONFIRMED') {
+                statusBadge.innerText = 'PREPARING';
+                statusBadge.className = 'badge badge-cyan';
+            } else if (current === 'PREPARING') {
+                statusBadge.innerText = 'DELIVERED';
+                statusBadge.className = 'badge badge-purple';
+            }
+        }
+
+        function simulateWebhookPayment(status) {
+            const paymentStatusBadge = document.getElementById('payment-status-1');
+            const orderStatusBadge = document.getElementById('order-status-1');
+            paymentStatusBadge.innerText = 'PAID';
+            paymentStatusBadge.className = 'badge badge-emerald';
+
+            orderStatusBadge.innerText = 'AWAITING_ACCEPTANCE';
+            orderStatusBadge.className = 'badge badge-cyan';
+
+            document.getElementById('payment-audit-preview').innerText = JSON.stringify({
+                "gateway": "YAPE_PLIN",
+                "gateway_transaction_id": "YP-TX-984210",
+                "merchant_reference": "ORD-2026-0001",
+                "amount": 81.00,
+                "currency": "PEN",
+                "status": "APPROVED",
+                "paid_at": new Date().toISOString()
+            }, null, 2);
+
+            alert('✅ Webhook de pago YAPE_PLIN recibido y procesado con éxito. Estado del pedido actualizado a PAID -> AWAITING_ACCEPTANCE.');
+        }
+
+        function adjustStock(id, qty) {
+            const currEl = document.getElementById('stock-current-' + id);
+            const availEl = document.getElementById('stock-available-' + id);
+            const badgeEl = document.getElementById('stock-badge-' + id);
+
+            let curr = parseFloat(currEl.innerText) + qty;
+            if (curr < 0) curr = 0;
+
+            currEl.innerText = curr.toFixed(2);
+            let avail = curr - 2.0;
+            if (avail < 0) avail = 0;
+            availEl.innerText = avail.toFixed(2);
+
+            if (curr <= 0) {
+                badgeEl.innerText = 'AGOTADO (OUT_OF_STOCK)';
+                badgeEl.className = 'badge badge-rose';
+            } else if (curr <= 5.0) {
+                badgeEl.innerText = 'STOCK MÍNIMO CRÍTICO';
+                badgeEl.className = 'badge badge-amber';
+            } else {
+                badgeEl.innerText = 'DISPONIBLE';
+                badgeEl.className = 'badge badge-emerald';
+            }
+        }
+
+        function viewSnapshot(orderNumber) {
+            alert("📋 OrderSnapshot JSON (" + orderNumber + "):\n" + JSON.stringify({
+                "order_number": orderNumber,
+                "items": [{
+                    "product_name": "Pizza Familiar BBQ",
+                    "base_price": 35.00,
+                    "quantity": 2,
+                    "selected_options": [{"option_name": "Salsa", "value_name": "BBQ", "price_modifier": 3.00}],
+                    "calculated_unit_price": 38.00,
+                    "subtotal": 76.00
+                }],
+                "delivery_fee": 5.00,
+                "total_amount": 81.00
+            }, null, 2));
+        }
+    </script>
+</body>
+</html>

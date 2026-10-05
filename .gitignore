@@ -1,0 +1,98 @@
+/.env
+/.env.*
+!.env.example
+!.env.production.template
+
+/vendor/
+/node_modules/
+
+/.wwebjs_auth/
+/.wwebjs_cache/
+
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/app/private/*
+
+.phpunit.result.cache
+.phpunit.cache
+
+*.stackdump
+
+composer.phar
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+
+*.tmp
+*.temp
+
+/scratch/
+/.temp_check_state.php
+
+
+# Local forensic / command artifacts
+'$l){if(stripos($l
+'$line)
+'2026-09-01
+'bindChannel(12
+'bootstrap()
+'business_name
+'fetchColumn()
+'first()
+'get()
+'get())
+'getPathname()
+'name
+'resolveActivePublishedVersionId(12)
+'sku
+'toArray())
+v
+C:temp*.txt
+
+
+# Local MySQL runtime data
+/storage/mysql8_data/
+
+# Local WhatsApp gateway runtime
+/whatsapp-qr-gateway/node_modules/
+/whatsapp-qr-gateway/.wwebjs_cache/
+/whatsapp-qr-gateway/.wwebjs_auth/
+
+
+# Accidental local command/artifact files
+/C:tempapp_files.txt
+/C:tempconfig_files.txt
+/C:tempmigrations_files.txt
+/C:tempresources_files.txt
+/C:temproutes_files.txt
+/C:temptests_files.txt
+/C:tempviews_files.txt
+
+# Accidental malformed Windows-path artifacts
+/C*tempapp_files.txt
+/C*tempconfig_files.txt
+/C*tempmigrations_files.txt
+/C*tempresources_files.txt
+/C*temproutes_files.txt
+/C*temptests_files.txt
+/C*tempviews_files.txt
+
+# Local Composer binaries/installers
+/composer.phar
+/composer-setup.php
+
+# Historical/local database dump — not canonical schema
+/storage/schema_dump.sql
+
+# Runtime tenant uploads and commercial evidences
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+
+# Runtime tenant uploads and commercial source files
+/public/uploads/*
+!/public/uploads/.gitkeep

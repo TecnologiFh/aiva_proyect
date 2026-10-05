@@ -96,3 +96,7 @@ C:temp*.txt
 # Runtime tenant uploads and commercial source files
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Laravel generated bootstrap cache
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitkeep
